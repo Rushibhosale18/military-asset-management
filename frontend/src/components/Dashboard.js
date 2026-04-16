@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { Package, MapPin, Activity, Plus } from 'lucide-react';
 
@@ -11,7 +11,7 @@ function Dashboard({ user }) {
   const [showPurchaseForm, setShowPurchaseForm] = useState(false);
   const [newAsset, setNewAsset] = useState({ name: '', category: 'Weapon', base: 'Alpha Base', quantity: 1, description: '' });
 
-  const fetchAssets = async () => {
+  const fetchAssets = useCallback(async () => {
     try {
       const url = `${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/assets${filterBase ? `?base=${filterBase}` : ''}`;
       const res = await axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
@@ -21,11 +21,11 @@ function Dashboard({ user }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filterBase]);
 
   useEffect(() => {
     fetchAssets();
-  }, [filterBase]);
+  }, [fetchAssets]);
 
   const handlePurchase = async (e) => {
     e.preventDefault();
